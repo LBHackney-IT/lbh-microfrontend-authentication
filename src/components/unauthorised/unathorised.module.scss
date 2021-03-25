@@ -1,0 +1,20 @@
+@import "~lbh-frontend/lbh/base";
+@import "~lbh-frontend/lbh/core/all";
+@import "~lbh-frontend/lbh/objects/all";
+
+.unauthorised {
+  border: 1px solid lbh-colour("lbh-a04");
+  border-left-width: 15px;
+  padding: 30px;
+  background: lighten(lbh-colour("lbh-a04"), 20%);
+
+  @include lbh-font;
+
+  p {
+    margin: 0;
+    padding: 9px;
+    font-weight: bold;
+    font-size: 2rem;
+    line-height: 1.2rem;
+  }
+}
