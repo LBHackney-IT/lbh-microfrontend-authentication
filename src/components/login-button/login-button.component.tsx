@@ -1,11 +1,13 @@
-import React from "react";
-import style from "./login-button.module.scss";
-import { Auth } from "../../util/mtfh-util-auth";
+import React from 'react';
 
-const LoginButton = ({ loginUrl }) => (
-  <a href={loginUrl} className={style.button}>
-    Sign in using Hackney.gov.uk
-  </a>
+import { LoginButtonProperties } from './login-button.types';
+
+import './login-button.scss';
+
+export const LoginButton = ({
+    loginUrl,
+}: LoginButtonProperties): JSX.Element => (
+    <a href={loginUrl} className="govuk-button lbh-button">
+        Sign in using Hackney.gov.uk
+    </a>
 );
-
-export default LoginButton;

@@ -3,5 +3,16 @@
 yarn.lock
 yarn-error.log
 package-lock.json
+LICENSE
+*.ejs
 dist
 coverage
+*.tf
+.idea/
+.nvmrc
+.gitattributes
+.editorconfig
+.circleci/
+.yarn/
+.yarnrc
+node_modules/

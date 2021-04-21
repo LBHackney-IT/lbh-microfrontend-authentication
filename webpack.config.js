@@ -1,45 +1,40 @@
-const { merge } = require("webpack-merge");
-const singleSpaDefaults = require("webpack-config-single-spa-react-ts");
+const { merge } = require('webpack-merge');
+const singleSpaDefaults = require('webpack-config-single-spa-react-ts');
+const webpack = require('webpack');
 
 module.exports = (webpackConfigEnv, argv) => {
-  const defaultConfig = singleSpaDefaults({
-    orgName: "mtfh",
-    projectName: "auth",
-    webpackConfigEnv,
-    argv,
-  });
+    const defaultConfig = singleSpaDefaults({
+        orgName: 'mtfh',
+        projectName: 'auth',
+        webpackConfigEnv,
+        argv,
+    });
 
-  return merge(defaultConfig, {
-    // modify the webpack config however you'd like to by adding to this object
-
-    module: {
-      rules: [
-        {
-          test: /\.svg$/,
-          use: "file-loader",
+    return merge(defaultConfig, {
+        module: {
+            rules: [
+                {
+                    test: /\.svg$/,
+                    use: 'file-loader',
+                },
+                {
+                    test: /\.scss$/i,
+                    use: ['style-loader', 'css-loader', 'sass-loader'],
+                },
+            ],
         },
-        {
-          test: /\.s[ac]ss$/i,
-          use: [
-            "style-loader",
-            {
-              loader: "css-loader",
-              options: {
-                modules: true,
-              },
+        resolve: {
+            fallback: {
+                buffer: require.resolve('buffer/'),
+                stream: require.resolve('stream-browserify'),
+                crypto: require.resolve('crypto-browserify'),
+                util: require.resolve('util/'),
             },
-            "sass-loader",
-          ],
         },
-      ],
-    },
-
-    resolve: {
-      fallback: {
-        buffer: require.resolve("buffer/"),
-        stream: require.resolve("stream-browserify"),
-        crypto: require.resolve("crypto-browserify"),
-      },
-    },
-  });
+        plugins: [
+            new webpack.ProvidePlugin({
+                process: 'process/browser',
+            }),
+        ],
+    });
 };

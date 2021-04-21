@@ -1,7 +1,9 @@
 {
-  "extends": "ts-config-single-spa",
-  "compilerOptions": {
-    "jsx": "react"
-  },
-  "include": ["src/**/*", "typings/**/*"]
+    "extends": "ts-config-single-spa",
+    "include": ["src/**/*", "typings/**/*"],
+    "compilerOptions": {
+        "strict": true,
+        "jsx": "react",
+        "target": "es2016"
+    }
 }

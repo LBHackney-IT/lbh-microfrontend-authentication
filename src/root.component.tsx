@@ -1,32 +1,35 @@
-import React from "react";
+import React from 'react';
 
-import Unauthorised from "./components/unauthorised/unauthorised.component";
-import { Auth } from "./util/mtfh-util-auth";
-import LoginButton from "./components/login-button/login-button.component";
+import { Authentication } from './services';
+import { LoginButton, Unauthorised } from './components';
 
-const ALLOWED_GROUPS = ["saml-aws-console-mtfh-developer"];
+import './root.styles.scss';
 
-export default function Root(props) {
-  const AuthInstance = Auth.getInstance();
+export default function Root(): JSX.Element {
+    const authentication = Authentication.getInstance();
+    const isAuthorised = authentication.isAuthorisedForGroups([
+        'saml-aws-console-mtfh-developer',
+    ]);
 
-  const token = AuthInstance.getToken();
-  const isAuthorised = ALLOWED_GROUPS.find(AuthInstance.hasGroup);
+    if (!authentication.isAuthenticated) {
+        return <LoginButton loginUrl={authentication.loginUrl} />;
+    }
 
-  return !token ? (
-    <LoginButton loginUrl={AuthInstance.createLoginURL()} />
-  ) : token && !isAuthorised ? (
-    <Unauthorised />
-  ) : (
-    <>
-      <pre>{JSON.stringify(AuthInstance.parseToken(), null, 4)}</pre>
-      <button
-        onClick={() => {
-          AuthInstance.logout();
-          window.location.reload();
-        }}
-      >
-        logout
-      </button>
-    </>
-  );
+    if (!isAuthorised) {
+        return <Unauthorised />;
+    }
+
+    return (
+        <>
+            <pre>{JSON.stringify(authentication.token, null, 4)}</pre>
+            <button
+                onClick={() => {
+                    authentication.logout();
+                    window.location.reload();
+                }}
+            >
+                logout
+            </button>
+        </>
+    );
 }
