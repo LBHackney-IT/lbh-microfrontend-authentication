@@ -1,6 +1,5 @@
 import React from 'react';
-import userEvent from '@testing-library/user-event';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 
 import { Authentication } from './services';
 import Root from './root.component';
@@ -11,11 +10,11 @@ import Root from './root.component';
         "email": "test@example.com",
         "iss": "Hackney",
         "name": "Tom Smith",
-        "groups": ["saml-aws-console-mtfh-developer"]
+        "groups": ["TEST_GROUP"]
     }
  */
 const mockTokenAuthorised =
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMTI4OTU2NTI2MTE1MDA3NTIxNzAiLCJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJpc3MiOiJIYWNrbmV5IiwibmFtZSI6IlRvbSBTbWl0aCIsImdyb3VwcyI6WyJzYW1sLWF3cy1jb25zb2xlLW10ZmgtZGV2ZWxvcGVyIl19.68fT4lMHv1SqQCz_I6m-BymGYrieBy7GGyV9H_MCM2U';
+    'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMTI4OTU2NTI2MTE1MDA3NTIxNzAiLCJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJpc3MiOiJIYWNrbmV5IiwibmFtZSI6IlRvbSBTbWl0aCIsImdyb3VwcyI6WyJURVNUX0dST1VQIl0sImp0aSI6IjRlZmUyMDA4LTc4NmMtNDE1Ni05MGJhLTJjM2UxMzk4ZDhmNSIsImlhdCI6MTYxODgyOTA5NSwiZXhwIjoxNjE4ODMyNjk1fQ.uXfOvdv5JiUUfRNMHWpdYDfqdyf8bWmzD3G4ns3lJPQ';
 
 /*
     {
@@ -34,28 +33,63 @@ Object.defineProperty(window.document, 'cookie', {
     value: '',
 });
 
+let location = window.location;
+
+beforeEach(() => {
+    Object.defineProperty(window, 'location', {
+        value: {
+            href: 'http://localhost/',
+        },
+        writable: true,
+    });
+});
+
+afterAll(() => {
+    window.location = location;
+});
+
 describe('Root component', () => {
     describe('with no token saved', () => {
-        it('should render the login button', () => {
-            window.document.cookie = ``;
-            Authentication.getInstance();
-
+        it('should redirect to google auth', async () => {
+            const auth = Authentication.getInstance();
+            const loginUrl = auth.loginUrl;
             render(<Root />);
-
-            expect(
-                screen.getByText(/sign in using hackney.gov.uk/i)
-            ).toBeInTheDocument();
+            await waitFor(() => expect(window.location.href).toBe(loginUrl));
         });
     });
 
     describe('with a token saved with authorised groups', () => {
-        it(`should render a "pre" block containing the test email`, () => {
+        it(`should replaceState to /search if history is available`, () => {
+            const replaceState = jest.fn();
+            window.history.replaceState = replaceState;
             window.document.cookie = `hackneyToken=${mockTokenAuthorised}`;
             Authentication.getInstance(true);
 
             render(<Root />);
 
-            expect(screen.getByText(/test@example.com/)).toBeInTheDocument();
+            expect(replaceState).toBeCalledTimes(1);
+            expect(replaceState).toBeCalledWith(null, '', '/search');
+        });
+
+        it(`should redirect to /search if history is unavailable`, async () => {
+            const history = window.history;
+
+            Object.defineProperty(window, 'history', {
+                value: false,
+                writable: true,
+            });
+
+            window.document.cookie = `hackneyToken=${mockTokenAuthorised}`;
+            Authentication.getInstance(true);
+
+            render(<Root />);
+
+            await waitFor(() => expect(window.location.href).toBe('/search'));
+
+            Object.defineProperty(window, 'history', {
+                value: history,
+                writable: true,
+            });
         });
     });
 
@@ -71,27 +105,6 @@ describe('Root component', () => {
                     /you do not have permission to access this service/i
                 )
             ).toBeInTheDocument();
-        });
-    });
-
-    describe('the "log out" button', () => {
-        it('should call the authentication logout method and reload the page when clicked', () => {
-            window.document.cookie = `hackneyToken=${mockTokenAuthorised}`;
-            const authentication = Authentication.getInstance(true);
-            const logoutSpy = jest.spyOn(authentication, 'logout');
-
-            const mockReload = jest.fn();
-            // @ts-ignore
-            delete window.location;
-            // @ts-ignore
-            window.location = { reload: mockReload };
-
-            render(<Root />);
-
-            userEvent.click(screen.getByRole('button', { name: 'logout' }));
-
-            expect(logoutSpy).toHaveBeenCalled();
-            expect(mockReload).toHaveBeenCalled();
         });
     });
 });

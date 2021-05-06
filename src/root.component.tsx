@@ -1,35 +1,24 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { Authentication } from './services';
-import { LoginButton, Unauthorised } from './components';
+import { Unauthorised } from './components';
 
 import './root.styles.scss';
 
-export default function Root(): JSX.Element {
-    const authentication = Authentication.getInstance();
-    const isAuthorised = authentication.isAuthorisedForGroups([
-        'saml-aws-console-mtfh-developer',
-    ]);
+export default function Root(): JSX.Element | null {
+    const auth = Authentication.getInstance();
 
-    if (!authentication.isAuthenticated) {
-        return <LoginButton loginUrl={authentication.loginUrl} />;
-    }
+    useEffect(() => {
+        if (!auth.isAuthenticated) {
+            window.location.href = auth.loginUrl;
+        } else if (auth.isAuthorised) {
+            if (window.history) {
+                window.history.replaceState(null, '', '/search');
+            } else {
+                window.location.href = '/search';
+            }
+        }
+    }, []);
 
-    if (!isAuthorised) {
-        return <Unauthorised />;
-    }
-
-    return (
-        <>
-            <pre>{JSON.stringify(authentication.token, null, 4)}</pre>
-            <button
-                onClick={() => {
-                    authentication.logout();
-                    window.location.reload();
-                }}
-            >
-                logout
-            </button>
-        </>
-    );
+    return auth.isAuthenticated && !auth.isAuthorised ? <Unauthorised /> : null;
 }

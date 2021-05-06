@@ -1,9 +1,11 @@
 import jwt_decode from 'jwt-decode';
 import Cookies from 'js-cookie';
 
+import { config } from '../config';
+
 export class Authentication {
     private static instance: Authentication;
-    private static AUTH_TOKEN_NAME = 'hackneyToken';
+    private static AUTH_TOKEN_NAME = config.authToken;
 
     private sub?: string;
     private iss?: string;
@@ -55,11 +57,18 @@ export class Authentication {
     }
 
     get loginUrl(): string {
-        return `//auth.hackney.gov.uk/auth?redirect_uri=${this.redirectUrl}`;
+        return `${config.authDomain}?redirect_uri=${this.redirectUrl}`;
+    }
+
+    get isAuthorised(): boolean {
+        return (
+            this.isAuthenticated &&
+            this.isAuthorisedForGroups(config.authAllowedGroups)
+        );
     }
 
     public isAuthorisedForGroups(groups: string[]): boolean {
-        return groups.some(group => this.groups.includes(group));
+        return groups.every(group => this.groups.includes(group));
     }
 
     public logout(): void {
@@ -71,7 +80,7 @@ export class Authentication {
         this.groups = [];
         this.iat = undefined;
         Cookies.remove(Authentication.AUTH_TOKEN_NAME, {
-            domain: 'hackney.gov.uk',
+            domain: config.cookieDomain,
         });
     }
 }
