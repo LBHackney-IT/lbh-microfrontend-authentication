@@ -1,17 +1,15 @@
 import React, { useEffect } from 'react';
 
-import { Authentication } from './services';
-import { Unauthorised } from './components';
+import { $auth, isAuthorised } from '@services';
+import { Unauthorised, LoginButton } from '@components';
 
 import './root.styles.scss';
 
 export default function Root(): JSX.Element | null {
-    const auth = Authentication.getInstance();
+    const auth = $auth.getValue();
 
     useEffect(() => {
-        if (!auth.isAuthenticated) {
-            window.location.href = auth.loginUrl;
-        } else if (auth.isAuthorised) {
+        if (isAuthorised()) {
             if (window.history) {
                 window.history.replaceState(null, '', '/search');
             } else {
@@ -20,5 +18,5 @@ export default function Root(): JSX.Element | null {
         }
     }, []);
 
-    return auth.isAuthenticated && !auth.isAuthorised ? <Unauthorised /> : null;
+    return auth.token && !isAuthorised() ? <Unauthorised /> : <LoginButton />;
 }

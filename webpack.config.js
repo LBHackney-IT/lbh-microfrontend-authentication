@@ -1,3 +1,4 @@
+const path = require('path');
 const { merge } = require('webpack-merge');
 const singleSpaDefaults = require('webpack-config-single-spa-react-ts');
 const webpack = require('webpack');
@@ -10,7 +11,6 @@ module.exports = (webpackConfigEnv, argv) => {
         webpackConfigEnv,
         argv,
     });
-
     return merge(defaultConfig, {
         module: {
             rules: [
@@ -30,6 +30,10 @@ module.exports = (webpackConfigEnv, argv) => {
                 stream: require.resolve('stream-browserify'),
                 crypto: require.resolve('crypto-browserify'),
                 util: require.resolve('util/'),
+            },
+            alias: {
+                '@components': path.resolve(__dirname, 'src', 'components'),
+                '@services': path.resolve(__dirname, 'src', 'services'),
             },
         },
         plugins: [

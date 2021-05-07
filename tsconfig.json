@@ -1,9 +1,17 @@
 {
     "extends": "ts-config-single-spa",
-    "include": ["src/**/*", "typings/**/*"],
+    "include": ["src/**/*"],
     "compilerOptions": {
         "strict": true,
         "jsx": "react",
-        "target": "es2016"
+        "target": "es2016",
+        "noEmit": false,
+        "baseUrl": "src",
+        "composite": true,
+        "esModuleInterop": true,
+        "paths": {
+            "@components": ["components"],
+            "@services": ["services"]
+        }
     }
 }

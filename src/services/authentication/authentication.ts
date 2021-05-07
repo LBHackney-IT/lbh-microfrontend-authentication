@@ -1,86 +1,65 @@
+import { BehaviorSubject } from 'rxjs';
 import jwt_decode from 'jwt-decode';
 import Cookies from 'js-cookie';
 
+import { AuthUser, JWTPayload } from './authentication.types';
 import { config } from '../config';
 
-export class Authentication {
-    private static instance: Authentication;
-    private static AUTH_TOKEN_NAME = config.authToken;
+const voidUser = {
+    token: '',
+    sub: '',
+    email: '',
+    iss: '',
+    name: '',
+    groups: [],
+    iat: Number.NaN,
+};
 
-    private sub?: string;
-    private iss?: string;
-    private iat?: string;
+const parseToken = (): AuthUser => {
+    const token = Cookies.get(config.authToken) || null;
 
-    token?: string | null;
-    name?: string;
-    email?: string;
-    groups: string[] = [];
-
-    constructor() {}
-
-    static getInstance(forceNew = false): Authentication {
-        if (!Authentication.instance || forceNew) {
-            Authentication.instance = new Authentication();
-            Authentication.instance.token = Authentication.instance.parseToken();
-        }
-
-        return Authentication.instance;
+    if (!token) {
+        return voidUser;
     }
 
-    private parseToken() {
-        const token = Cookies.get(Authentication.AUTH_TOKEN_NAME) || null;
-
-        if (token === null) {
-            return null;
-        }
-
-        try {
-            const decodedToken = jwt_decode<string>(token);
-            Object.assign(this, decodedToken);
-
-            return decodedToken;
-        } catch {
-            return null;
-        }
+    try {
+        const decodedToken = jwt_decode<JWTPayload>(token);
+        return {
+            ...decodedToken,
+            token,
+        };
+    } catch {
+        return voidUser;
     }
+};
 
-    get isAuthenticated(): boolean {
-        return !!this.token;
-    }
+export const $auth = new BehaviorSubject(parseToken());
 
-    get fullName(): string | undefined {
-        return this.name;
-    }
+export const processToken = (): void => {
+    $auth.next(parseToken());
+};
 
-    get redirectUrl(): string {
-        return window.location.href;
-    }
+export const isAuthorisedForGroups = (groups: string[]): boolean => {
+    const auth = $auth.getValue();
+    return groups.every(group => auth.groups.includes(group));
+};
 
-    get loginUrl(): string {
-        return `${config.authDomain}?redirect_uri=${this.redirectUrl}`;
-    }
+export const isAuthorised = (): boolean => {
+    return isAuthorisedForGroups(config.authAllowedGroups);
+};
 
-    get isAuthorised(): boolean {
-        return (
-            this.isAuthenticated &&
-            this.isAuthorisedForGroups(config.authAllowedGroups)
-        );
-    }
+export const login = (
+    redirectUrl = `${window.location.origin}/search`
+): void => {
+    logout();
+    window.location.href = `${
+        config.authDomain
+    }?redirect_uri=${encodeURIComponent(redirectUrl)}`;
+};
 
-    public isAuthorisedForGroups(groups: string[]): boolean {
-        return groups.every(group => this.groups.includes(group));
-    }
-
-    public logout(): void {
-        this.token = undefined;
-        this.sub = undefined;
-        this.email = undefined;
-        this.iss = undefined;
-        this.name = undefined;
-        this.groups = [];
-        this.iat = undefined;
-        Cookies.remove(Authentication.AUTH_TOKEN_NAME, {
-            domain: config.cookieDomain,
-        });
-    }
-}
+export const logout = (): void => {
+    $auth.next(voidUser);
+    Cookies.remove(config.authToken, {
+        domain: config.cookieDomain,
+    });
+};

@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 
-import { Authentication } from './services';
+import { processToken, logout } from './services';
 import Root from './root.component';
 
 /*
@@ -33,7 +33,7 @@ Object.defineProperty(window.document, 'cookie', {
     value: '',
 });
 
-let location = window.location;
+const location = window.location;
 
 beforeEach(() => {
     Object.defineProperty(window, 'location', {
@@ -50,20 +50,23 @@ afterAll(() => {
 
 describe('Root component', () => {
     describe('with no token saved', () => {
-        it('should redirect to google auth', async () => {
-            const auth = Authentication.getInstance();
-            const loginUrl = auth.loginUrl;
-            render(<Root />);
-            await waitFor(() => expect(window.location.href).toBe(loginUrl));
+        it('should show the LoginButton', () => {
+            const { getByText } = render(<Root />);
+            expect(
+                getByText('Sign in using Hackney.gov.uk')
+            ).toBeInTheDocument();
         });
     });
 
     describe('with a token saved with authorised groups', () => {
-        it(`should replaceState to /search if history is available`, () => {
+        beforeAll(() => {
+            logout();
+            window.document.cookie = `hackneyToken=${mockTokenAuthorised}`;
+            processToken();
+        });
+        it(`should replaceState to /search if history is available`, async () => {
             const replaceState = jest.fn();
             window.history.replaceState = replaceState;
-            window.document.cookie = `hackneyToken=${mockTokenAuthorised}`;
-            Authentication.getInstance(true);
 
             render(<Root />);
 
@@ -79,9 +82,6 @@ describe('Root component', () => {
                 writable: true,
             });
 
-            window.document.cookie = `hackneyToken=${mockTokenAuthorised}`;
-            Authentication.getInstance(true);
-
             render(<Root />);
 
             await waitFor(() => expect(window.location.href).toBe('/search'));
@@ -94,10 +94,13 @@ describe('Root component', () => {
     });
 
     describe('with a token saved with unauthorised groups', () => {
-        it(`should show a "you don't have permission" message`, () => {
+        beforeAll(() => {
+            logout();
             window.document.cookie = `hackneyToken=${mockTokenUnauthorised}`;
-            Authentication.getInstance(true);
+            processToken();
+        });
 
+        it(`should show a "you don't have permission" message`, () => {
             render(<Root />);
 
             expect(

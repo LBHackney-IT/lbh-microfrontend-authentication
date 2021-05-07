@@ -3,8 +3,9 @@
     "version": "0.0.1",
     "license": "MIT",
     "private": true,
+    "main": "src/mtfh-auth.tsx",
     "scripts": {
-        "start": "webpack serve",
+        "start": "webpack serve --port 8081",
         "start:standalone": "webpack serve --env standalone",
         "build": "webpack --mode=production",
         "analyze": "webpack --mode=production --env analyze",
@@ -40,6 +41,7 @@
         "lbh-frontend": "3.5.2",
         "react": "17.0.2",
         "react-dom": "17.0.2",
+        "rxjs": "7.0.0",
         "stream": "0.0.2",
         "stream-browserify": "3.0.0",
         "util": "0.12.3"
@@ -71,6 +73,7 @@
         "dotenv": "9.0.0",
         "eslint": "7.24.0",
         "eslint-config-prettier": "8.1.0",
+        "eslint-import-resolver-typescript": "2.4.0",
         "eslint-plugin-html": "6.1.2",
         "eslint-plugin-import": "2.22.1",
         "eslint-plugin-prettier": "3.3.1",
