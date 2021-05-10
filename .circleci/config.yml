@@ -96,10 +96,10 @@ jobs:
             - run:
                 name: build
                 command: |
-                    export AUTH_ALLOWED_GROUPS=$(aws ssm get-parameter --name /housing-tl/<<parameters.stage>>/auth-allowed-groups --query Parameter.Value)
-                    export AUTH_DOMAIN=$(aws ssm get-parameter --name /housing-tl/<<parameters.stage>>/auth-domain --query Parameter.Value)
-                    export COOKIE_DOMAIN=$(aws ssm get-parameter --name /housing-tl/<<parameters.stage>>/cookie-domain --query Parameter.Value)
-                    export AUTH_TOKEN_NAME=$(aws ssm get-parameter --name /housing-tl/<<parameters.stage>>/auth-token-name --query Parameter.Value)
+                    export AUTH_ALLOWED_GROUPS=$(aws ssm get-parameter --name /housing-tl/<<parameters.stage>>/auth-allowed-groups --query Parameter.Value --output text)
+                    export AUTH_DOMAIN=$(aws ssm get-parameter --name /housing-tl/<<parameters.stage>>/auth-domain --query Parameter.Value --output text)
+                    export COOKIE_DOMAIN=$(aws ssm get-parameter --name /housing-tl/<<parameters.stage>>/cookie-domain --query Parameter.Value --output text)
+                    export AUTH_TOKEN_NAME=$(aws ssm get-parameter --name /housing-tl/<<parameters.stage>>/auth-token-name --query Parameter.Value --output text)
                     yarn build
             - run:
                   name: Deploy to S3
@@ -117,10 +117,10 @@ jobs:
             - run:
                 name: build
                 command: |
-                    export AUTH_ALLOWED_GROUPS=$(aws ssm get-parameter --name /housing-tl/<<parameters.stage>>/auth-allowed-groups --query Parameter.Value)
-                    export AUTH_DOMAIN=$(aws ssm get-parameter --name /housing-tl/<<parameters.stage>>/auth-domain --query Parameter.Value)
-                    export COOKIE_DOMAIN=$(aws ssm get-parameter --name /housing-tl/<<parameters.stage>>/cookie-domain --query Parameter.Value)
-                    export AUTH_TOKEN_NAME=$(aws ssm get-parameter --name /housing-tl/<<parameters.stage>>/auth-token-name --query Parameter.Value)
+                    export AUTH_ALLOWED_GROUPS=$(aws ssm get-parameter --name /housing-tl/<<parameters.stage>>/auth-allowed-groups --query Parameter.Value --output text)
+                    export AUTH_DOMAIN=$(aws ssm get-parameter --name /housing-tl/<<parameters.stage>>/auth-domain --query Parameter.Value --output text)
+                    export COOKIE_DOMAIN=$(aws ssm get-parameter --name /housing-tl/<<parameters.stage>>/cookie-domain --query Parameter.Value --output text)
+                    export AUTH_TOKEN_NAME=$(aws ssm get-parameter --name /housing-tl/<<parameters.stage>>/auth-token-name --query Parameter.Value --output text)
                     yarn build
             - run:
                   name: Deploy to S3
@@ -138,10 +138,10 @@ jobs:
             - run:
                 name: build
                 command: |
-                    export AUTH_ALLOWED_GROUPS=$(aws ssm get-parameter --name /housing-tl/<<parameters.stage>>/auth-allowed-groups --query Parameter.Value)
-                    export AUTH_DOMAIN=$(aws ssm get-parameter --name /housing-tl/<<parameters.stage>>/auth-domain --query Parameter.Value)
-                    export COOKIE_DOMAIN=$(aws ssm get-parameter --name /housing-tl/<<parameters.stage>>/cookie-domain --query Parameter.Value)
-                    export AUTH_TOKEN_NAME=$(aws ssm get-parameter --name /housing-tl/<<parameters.stage>>/auth-token-name --query Parameter.Value)
+                    export AUTH_ALLOWED_GROUPS=$(aws ssm get-parameter --name /housing-tl/<<parameters.stage>>/auth-allowed-groups --query Parameter.Value --output text)
+                    export AUTH_DOMAIN=$(aws ssm get-parameter --name /housing-tl/<<parameters.stage>>/auth-domain --query Parameter.Value --output text)
+                    export COOKIE_DOMAIN=$(aws ssm get-parameter --name /housing-tl/<<parameters.stage>>/cookie-domain --query Parameter.Value --output text)
+                    export AUTH_TOKEN_NAME=$(aws ssm get-parameter --name /housing-tl/<<parameters.stage>>/auth-token-name --query Parameter.Value --output text)
                     yarn build
             - run:
                   name: Deploy to S3
@@ -194,26 +194,26 @@ workflows:
                   context: api-assume-role-housing-development-context
                   requires:
                       - lint-and-test
-                #   filters:
-                #       branches:
-                #           only: main
+                  filters:
+                      branches:
+                          only: main
             - terraform-init-and-apply-to-development:
                   requires:
                       - assume-role-development
-                #   filters:
-                #       branches:
-                #           only: main
+                  filters:
+                      branches:
+                          only: main
             - build-deploy-development:
                   stage: "development"
                   requires:
                       - terraform-init-and-apply-to-development
-                #   filters:
-                #       branches:
-                #           only: main
+                  filters:
+                      branches:
+                          only: main
             - assume-role-staging:
                   context: api-assume-role-housing-staging-context
                   requires:
-                      - lint-and-test
+                      - build-deploy-development
                   filters:
                       branches:
                           only: main

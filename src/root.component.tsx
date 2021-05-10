@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 
-import { $auth, isAuthorised } from '@services';
-import { Unauthorised, LoginButton } from '@components';
+import { $auth, isAuthorised } from './services';
+import { Unauthorised, LoginButton } from './components';
 
 import './root.styles.scss';
 

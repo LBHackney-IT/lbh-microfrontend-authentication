@@ -31,10 +31,6 @@ module.exports = (webpackConfigEnv, argv) => {
                 crypto: require.resolve('crypto-browserify'),
                 util: require.resolve('util/'),
             },
-            alias: {
-                '@components': path.resolve(__dirname, 'src', 'components'),
-                '@services': path.resolve(__dirname, 'src', 'services'),
-            },
         },
         plugins: [
             new webpack.EnvironmentPlugin({

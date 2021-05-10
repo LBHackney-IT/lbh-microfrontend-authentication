@@ -1,8 +1,8 @@
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react';
 
-import { config } from '@services';
-import { LoginButton } from './login-button.component';
+import { LoginButton } from './login-button';
+import { config } from '../../services';
 
 const location = window.location;
 

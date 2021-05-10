@@ -8,10 +8,6 @@
         "noEmit": false,
         "baseUrl": "src",
         "composite": true,
-        "esModuleInterop": true,
-        "paths": {
-            "@components": ["components"],
-            "@services": ["services"]
-        }
+        "esModuleInterop": true
     }
 }
