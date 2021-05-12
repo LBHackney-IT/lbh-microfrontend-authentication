@@ -1,4 +1,3 @@
-const path = require('path');
 const { merge } = require('webpack-merge');
 const singleSpaDefaults = require('webpack-config-single-spa-react-ts');
 const webpack = require('webpack');
@@ -23,14 +22,6 @@ module.exports = (webpackConfigEnv, argv) => {
                     use: ['style-loader', 'css-loader', 'sass-loader'],
                 },
             ],
-        },
-        resolve: {
-            fallback: {
-                buffer: require.resolve('buffer/'),
-                stream: require.resolve('stream-browserify'),
-                crypto: require.resolve('crypto-browserify'),
-                util: require.resolve('util/'),
-            },
         },
         plugins: [
             new webpack.EnvironmentPlugin({
