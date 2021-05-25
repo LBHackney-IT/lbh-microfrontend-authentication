@@ -15,7 +15,12 @@ export const Unauthorised = (): JSX.Element => {
                 You do not have permission to access this service.
             </h2>
             <div className="govuk-error-summary__body">
-                <p>To request permission please contact [xxxxxxxxxxx]</p>
+                <p>
+                    To request permission please contact
+                    <a href="mailto:david.durant@hackney.gov.uk">
+                        david.durant@hackney.gov.uk
+                    </a>
+                </p>
             </div>
         </div>
     );
