@@ -1,3 +1,4 @@
+import { useHistory } from 'react-router-dom';
 import React, { useEffect } from 'react';
 
 import { $auth, isAuthorised } from './services';
@@ -6,15 +7,13 @@ import { Unauthorised, LoginButton } from './components';
 import './root.styles.scss';
 
 export default function Root(): JSX.Element | null {
+    const history = useHistory();
+
     const auth = $auth.getValue();
 
     useEffect(() => {
-        if (isAuthorised()) {
-            if (window.history) {
-                window.history.replaceState(null, '', '/search');
-            } else {
-                window.location.href = '/search';
-            }
+        if (isAuthorised() && history) {
+            history.push('/search');
         }
     }, []);
 

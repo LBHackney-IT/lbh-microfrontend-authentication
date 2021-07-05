@@ -28,6 +28,15 @@ const mockTokenAuthorised =
 const mockTokenUnauthorised =
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMTI4OTU2NTI2MTE1MDA3NTIxNzAiLCJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJpc3MiOiJIYWNrbmV5IiwibmFtZSI6IlRvbSBTbWl0aCIsImdyb3VwcyI6IltdIn0.gCUnv7_vu1GGqzOW7kubK3mGt99CPsAQyNaNvd6khUc';
 
+const mockHistoryPush = jest.fn();
+
+jest.mock('react-router-dom', () => ({
+    ...jest.requireActual('react-router-dom'),
+    useHistory: () => ({
+        push: mockHistoryPush,
+    }),
+}));
+
 Object.defineProperty(window.document, 'cookie', {
     writable: true,
     value: '',
@@ -64,32 +73,10 @@ describe('Root component', () => {
             window.document.cookie = `hackneyToken=${mockTokenAuthorised}`;
             processToken();
         });
-        it(`should replaceState to /search if history is available`, async () => {
-            const replaceState = jest.fn();
-            window.history.replaceState = replaceState;
-
+        it(`should call mockHistoryPush to /search if history is available`, async () => {
             render(<Root />);
-
-            expect(replaceState).toBeCalledTimes(1);
-            expect(replaceState).toBeCalledWith(null, '', '/search');
-        });
-
-        it(`should redirect to /search if history is unavailable`, async () => {
-            const history = window.history;
-
-            Object.defineProperty(window, 'history', {
-                value: false,
-                writable: true,
-            });
-
-            render(<Root />);
-
-            await waitFor(() => expect(window.location.href).toBe('/search'));
-
-            Object.defineProperty(window, 'history', {
-                value: history,
-                writable: true,
-            });
+            expect(mockHistoryPush).toBeCalledTimes(1);
+            expect(mockHistoryPush).toBeCalledWith('/search');
         });
     });
 
