@@ -1,7 +1,7 @@
 import { useHistory } from 'react-router-dom';
 import React, { useEffect } from 'react';
 
-import { $auth, isAuthorised } from './services';
+import { $auth, isAuthorised } from '@mtfh/common';
 import { Unauthorised, LoginButton } from './components';
 
 import './root.styles.scss';

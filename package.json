@@ -32,6 +32,7 @@
         "buffer": false
     },
     "dependencies": {
+        "@mtfh/common": "https://github.com/LBHackney-IT/mtfh-frontend-common.git",
         "@types/js-cookie": "2.2.6",
         "classnames": "2.3.1",
         "govuk-frontend": "3.11.0",

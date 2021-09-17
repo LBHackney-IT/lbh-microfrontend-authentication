@@ -4,13 +4,6 @@ import React from 'react';
 
 import Root from './root.component';
 
-export {
-    $auth,
-    isAuthorised,
-    isAuthorisedForGroups,
-    logout,
-} from './services/authentication';
-
 export const { bootstrap, mount, unmount } = singleSpaReact({
     React,
     ReactDOM,

@@ -1,6 +1,9 @@
 import React from 'react';
 
 import './unathorised.scss';
+import { Button, ErrorSummary } from '@mtfh/common';
+import { locale } from '../../services';
+import { REQUEST_ACCESS_LINK } from '../../constants';
 
 export const Unauthorised = (): JSX.Element => {
     return (
@@ -11,15 +14,16 @@ export const Unauthorised = (): JSX.Element => {
             tabIndex={-1}
             data-module="govuk-error-summary"
         >
-            <h2 className="govuk-error-summary__title" id="error-summary-title">
-                You do not have permission to access this service.
-            </h2>
+            <ErrorSummary
+                id="error-summary-title"
+                title={locale.unauthorisedToViewService}
+            />
             <div className="govuk-error-summary__body">
                 <p>
-                    To request permission please contact
-                    <a href="mailto:david.durant@hackney.gov.uk">
-                        david.durant@hackney.gov.uk
-                    </a>
+                    {locale.contactToRequestPermission}
+                    <Button as="a" href={REQUEST_ACCESS_LINK}>
+                        {locale.requestAccess}
+                    </Button>
                 </p>
             </div>
         </div>
