@@ -24,13 +24,5 @@ module.exports = (webpackConfigEnv, argv) => {
             ],
         },
         externals: ['react-router-dom'],
-        plugins: [
-            new webpack.EnvironmentPlugin({
-                AUTH_ALLOWED_GROUPS: dotenv.AUTH_ALLOWED_GROUPS || '',
-                AUTH_DOMAIN: dotenv.AUTHDOMAIN || '',
-                COOKIE_DOMAIN: dotenv.COOKIE_DOMAIN || '',
-                AUTH_TOKEN_NAME: dotenv.AUTH_TOKEN_NAME || '',
-            }),
-        ],
     });
 };

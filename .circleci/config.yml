@@ -15,7 +15,7 @@ parameters:
     run_staging_workflow:
         default: false
         type: boolean
-    
+
     run_production_workflow:
         default: false
         type: boolean
@@ -127,12 +127,7 @@ jobs:
             - aws-cli/install
             - run:
                 name: build
-                command: |
-                    export AUTH_ALLOWED_GROUPS=$(aws ssm get-parameter --name /housing-tl/<<parameters.stage>>/auth-allowed-groups --query Parameter.Value --output text)
-                    export AUTH_DOMAIN=$(aws ssm get-parameter --name /housing-tl/<<parameters.stage>>/auth-domain --query Parameter.Value --output text)
-                    export COOKIE_DOMAIN=$(aws ssm get-parameter --name /housing-tl/<<parameters.stage>>/cookie-domain --query Parameter.Value --output text)
-                    export AUTH_TOKEN_NAME=$(aws ssm get-parameter --name /housing-tl/<<parameters.stage>>/auth-token-name --query Parameter.Value --output text)
-                    yarn build
+                command: yarn build
             - run:
                   name: Deploy to S3
                   command: aws s3 sync dist s3://lbh-housing-tl-auth-frontend-development.hackney.gov.uk/
@@ -148,12 +143,7 @@ jobs:
             - aws-cli/install
             - run:
                 name: build
-                command: |
-                    export AUTH_ALLOWED_GROUPS=$(aws ssm get-parameter --name /housing-tl/<<parameters.stage>>/auth-allowed-groups --query Parameter.Value --output text)
-                    export AUTH_DOMAIN=$(aws ssm get-parameter --name /housing-tl/<<parameters.stage>>/auth-domain --query Parameter.Value --output text)
-                    export COOKIE_DOMAIN=$(aws ssm get-parameter --name /housing-tl/<<parameters.stage>>/cookie-domain --query Parameter.Value --output text)
-                    export AUTH_TOKEN_NAME=$(aws ssm get-parameter --name /housing-tl/<<parameters.stage>>/auth-token-name --query Parameter.Value --output text)
-                    yarn build
+                command: yarn build
             - run:
                   name: Deploy to S3
                   command: aws s3 sync dist s3://lbh-housing-tl-auth-frontend-staging.hackney.gov.uk/
@@ -169,12 +159,7 @@ jobs:
             - aws-cli/install
             - run:
                 name: build
-                command: |
-                    export AUTH_ALLOWED_GROUPS=$(aws ssm get-parameter --name /housing-tl/<<parameters.stage>>/auth-allowed-groups --query Parameter.Value --output text)
-                    export AUTH_DOMAIN=$(aws ssm get-parameter --name /housing-tl/<<parameters.stage>>/auth-domain --query Parameter.Value --output text)
-                    export COOKIE_DOMAIN=$(aws ssm get-parameter --name /housing-tl/<<parameters.stage>>/cookie-domain --query Parameter.Value --output text)
-                    export AUTH_TOKEN_NAME=$(aws ssm get-parameter --name /housing-tl/<<parameters.stage>>/auth-token-name --query Parameter.Value --output text)
-                    yarn build
+                command: yarn build
             - run:
                   name: Deploy to S3
                   command: aws s3 sync dist s3://lbh-housing-tl-auth-frontend-production.hackney.gov.uk/
@@ -214,7 +199,7 @@ jobs:
         steps:
             - terraform-init-then-apply:
                   environment: "production"
-        
+
     trigger-e2e-pipeline:
         executor: cimg-base
         resource_class: small
@@ -369,7 +354,7 @@ workflows:
                   filters:
                       branches:
                           only: main
-    
+
     e2e-tests-failure:
         when: << pipeline.parameters.e2e_test_failure >>
         jobs:
