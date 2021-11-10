@@ -1,22 +1,26 @@
-import React from 'react';
-import { render, fireEvent } from '@testing-library/react';
-import { login } from '@mtfh/common';
-import { LoginButton } from './login-button';
-import { locale } from '../../services';
+import React from "react";
 
-jest.mock('@mtfh/common', () => ({
-    ...jest.requireActual('@mtfh/common'),
-    login: jest.fn(),
+import { render } from "@hackney/mtfh-test-utils";
+import { screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+
+import { locale } from "../../services";
+import { LoginButton } from "./login-button";
+
+import { login } from "@mtfh/common/lib/auth";
+
+jest.mock("@mtfh/common/lib/auth", () => ({
+  login: jest.fn(),
 }));
 
-it('renders correctly', () => {
-    const { container } = render(<LoginButton />);
-    expect(container).toMatchSnapshot();
+it("renders correctly", () => {
+  const { container } = render(<LoginButton />);
+  expect(container).toMatchSnapshot();
 });
 
-it('should call login', async () => {
-    const { getByText } = render(<LoginButton />);
-    const button = getByText(locale.signInUsingHackney);
-    fireEvent.click(button);
-    expect(login).toHaveBeenCalled();
+it("should call login", async () => {
+  render(<LoginButton />);
+  const button = screen.getByText(locale.signInUsingHackney);
+  userEvent.click(button);
+  expect(login).toHaveBeenCalled();
 });

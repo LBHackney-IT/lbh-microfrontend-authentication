@@ -1,21 +1,20 @@
-import { useHistory } from 'react-router-dom';
-import React, { useEffect } from 'react';
+import React, { useEffect } from "react";
+import { useHistory } from "react-router-dom";
 
-import { $auth, isAuthorised } from '@mtfh/common';
-import { Unauthorised, LoginButton } from './components';
+import { LoginButton, Unauthorised } from "./components";
 
-import './root.styles.scss';
+import { $auth, isAuthorised } from "@mtfh/common/lib/auth";
 
 export default function Root(): JSX.Element | null {
-    const history = useHistory();
+  const history = useHistory();
 
-    const auth = $auth.getValue();
+  const auth = $auth.getValue();
 
-    useEffect(() => {
-        if (isAuthorised() && history) {
-            history.push('/search');
-        }
-    }, []);
+  useEffect(() => {
+    if (isAuthorised()) {
+      history.push("/search");
+    }
+  }, [history]);
 
-    return auth.token && !isAuthorised() ? <Unauthorised /> : <LoginButton />;
+  return auth.token && !isAuthorised() ? <Unauthorised /> : <LoginButton />;
 }

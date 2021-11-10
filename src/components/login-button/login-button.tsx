@@ -1,9 +1,11 @@
-import React from 'react';
+import React from "react";
 
-import { login, Button } from '@mtfh/common';
-import { locale } from '../../services';
-import './login-button.scss';
+import { locale } from "../../services";
+
+import { login } from "@mtfh/common/lib/auth";
+import { Button } from "@mtfh/common/lib/components";
+import "./login-button.scss";
 
 export const LoginButton = (): JSX.Element => (
-    <Button onClick={() => login()}>{locale.signInUsingHackney}</Button>
+  <Button onClick={() => login()}>{locale.signInUsingHackney}</Button>
 );

@@ -1,19 +1,23 @@
-import singleSpaReact from 'single-spa-react';
-import ReactDOM from 'react-dom';
-import React from 'react';
+import React from "react";
+import ReactDOM from "react-dom";
 
-import Root from './root.component';
+import singleSpaReact from "single-spa-react";
+
+import Root from "./root.component";
+
+import { ErrorSummary } from "@mtfh/common/lib/components";
 
 export const { bootstrap, mount, unmount } = singleSpaReact({
-    React,
-    ReactDOM,
-    rootComponent: Root,
-    errorBoundary(error, info, properties) {
-        // TODO: Log this error.
-        console.error(error);
-        console.error(info);
-        console.error(properties);
-
-        return <div>Something has gone wrong.</div>;
-    },
+  React,
+  ReactDOM,
+  rootComponent: Root,
+  errorBoundary() {
+    return (
+      <ErrorSummary
+        id="mtfh-auth"
+        title="Error"
+        description="Unable to load authentication"
+      />
+    );
+  },
 });

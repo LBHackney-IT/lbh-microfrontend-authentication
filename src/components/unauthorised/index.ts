@@ -1,1 +1,1 @@
-export * from './unauthorised.component';
+export * from "./unauthorised";

@@ -1,77 +1,51 @@
-import React from 'react';
-import { render, screen } from '@testing-library/react';
+import React from "react";
 
-import { $auth, isAuthorised } from '@mtfh/common';
-import { locale } from './services';
-import Root from './root.component';
+import { render } from "@hackney/mtfh-test-utils";
+import { screen, waitFor } from "@testing-library/react";
 
-window.HTMLElement.prototype.scrollIntoView = jest.fn();
-const mockHistoryPush = jest.fn();
+import Root from "./root.component";
+import { locale } from "./services";
 
-jest.mock('react-router-dom', () => ({
-    ...jest.requireActual('react-router-dom'),
-    useHistory: () => ({
-        push: mockHistoryPush,
-    }),
+import { $auth, isAuthorised } from "@mtfh/common/lib/auth";
+
+jest.mock("@mtfh/common/lib/auth", () => ({
+  $auth: { getValue: jest.fn() },
+  isAuthorised: jest.fn().mockReturnValueOnce(true),
 }));
 
-const location = window.location;
+describe("Root component", () => {
+  const $authGetValueMock = $auth.getValue as jest.Mock;
+  const isAuthorisedMock = isAuthorised as jest.Mock;
 
-jest.mock('@mtfh/common', () => ({
-    ...jest.requireActual('@mtfh/common'),
-    $auth: { getValue: jest.fn() },
-    isAuthorised: jest.fn().mockReturnValueOnce(true),
-}));
+  describe("with no token saved", () => {
+    it("should show the LoginButton", () => {
+      $authGetValueMock.mockReturnValue({
+        token: undefined,
+      });
 
-beforeEach(() => {
-    Object.defineProperty(window, 'location', {
-        value: {
-            href: 'http://localhost/',
-        },
-        writable: true,
+      render(<Root />);
+      expect(screen.getByText(locale.signInUsingHackney)).toBeInTheDocument();
     });
-});
+  });
 
-afterAll(() => {
-    window.location = location;
-});
+  describe("with a token saved with authorised groups", () => {
+    it(`should call mockHistoryPush to /search`, async () => {
+      $authGetValueMock.mockReturnValue({ token: "token" });
+      isAuthorisedMock.mockReturnValue(true);
 
-describe('Root component', () => {
-    const $authGetValueMock = $auth.getValue as jest.Mock;
-    const isAuthorisedMock = isAuthorised as jest.Mock;
-
-    describe('with no token saved', () => {
-        it('should show the LoginButton', () => {
-            $authGetValueMock.mockReturnValueOnce({
-                token: undefined,
-            });
-
-            const { getByText } = render(<Root />);
-            expect(getByText(locale.signInUsingHackney)).toBeInTheDocument();
-        });
+      render(<Root />);
+      await waitFor(() => expect(window.location.pathname).toBe("/search"));
     });
+  });
 
-    describe('with a token saved with authorised groups', () => {
-        it(`should call mockHistoryPush to /search if history is available`, async () => {
-            $authGetValueMock.mockReturnValueOnce({ token: 'token' });
-            isAuthorisedMock.mockReturnValueOnce(true);
+  describe("with a token saved with unauthorised groups", () => {
+    it(`should show a "you don't have permission" message`, () => {
+      $authGetValueMock.mockReturnValue({ token: "token" });
+      isAuthorisedMock.mockReturnValue(false);
 
-            render(<Root />);
-            expect(mockHistoryPush).toBeCalledTimes(1);
-            expect(mockHistoryPush).toBeCalledWith('/search');
-        });
+      render(<Root />);
+
+      expect(screen.getByText(locale.unauthorisedToViewService)).toBeInTheDocument();
     });
-
-    describe('with a token saved with unauthorised groups', () => {
-        it(`should show a "you don't have permission" message`, () => {
-            $authGetValueMock.mockReturnValueOnce({ token: 'token' });
-            isAuthorisedMock.mockReturnValueOnce(false);
-
-            render(<Root />);
-
-            expect(
-                screen.getByText(locale.unauthorisedToViewService)
-            ).toBeInTheDocument();
-        });
-    });
+  });
 });
