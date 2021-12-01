@@ -3,10 +3,10 @@ import React from "react";
 import { render } from "@hackney/mtfh-test-utils";
 import { screen, waitFor } from "@testing-library/react";
 
+import { $auth, isAuthorised } from "@mtfh/common/lib/auth";
+
 import Root from "./root.component";
 import { locale } from "./services";
-
-import { $auth, isAuthorised } from "@mtfh/common/lib/auth";
 
 jest.mock("@mtfh/common/lib/auth", () => ({
   $auth: { getValue: jest.fn() },

@@ -3,9 +3,9 @@ import ReactDOM from "react-dom";
 
 import singleSpaReact from "single-spa-react";
 
-import Root from "./root.component";
-
 import { ErrorSummary } from "@mtfh/common/lib/components";
+
+import Root from "./root.component";
 
 export const { bootstrap, mount, unmount } = singleSpaReact({
   React,

@@ -1,14 +1,13 @@
 import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
 
-import { LoginButton, Unauthorised } from "./components";
+import { isAuthorised } from "@mtfh/common/lib/auth";
+import { ConfirmationRouter } from "@mtfh/common/lib/components";
 
-import { $auth, isAuthorised } from "@mtfh/common/lib/auth";
+import { LoginView } from "./views";
 
-export default function Root(): JSX.Element | null {
+const Root = (): JSX.Element | null => {
   const history = useHistory();
-
-  const auth = $auth.getValue();
 
   useEffect(() => {
     if (isAuthorised()) {
@@ -16,5 +15,11 @@ export default function Root(): JSX.Element | null {
     }
   }, [history]);
 
-  return auth.token && !isAuthorised() ? <Unauthorised /> : <LoginButton />;
-}
+  return (
+    <ConfirmationRouter>
+      <LoginView />
+    </ConfirmationRouter>
+  );
+};
+
+export default Root;
